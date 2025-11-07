@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Edit Question | {{ question.course.title }} | </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        html, body { margin:0; padding:0; height:100%; font-family:'Inter', sans-serif; background: #f5f7fb; }
+        .wrapper { min-height:100vh; display:flex; flex-direction:column; }
+
+        /* Navbar */
+        .navbar-custom {
+            background: linear-gradient(135deg, #6610f2, #6f42c1);
+            padding:1rem 2rem; color:white;
+            display:flex; justify-content:space-between; align-items:center;
+            border-radius:0 0 1rem 1rem; box-shadow:0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom:2rem;
+        }
+        .navbar-custom h2 { margin:0; font-weight:600; }
+        .navbar-custom a { color:white; font-weight:600; text-decoration:none; }
+        .navbar-custom a:hover { text-decoration: underline; color:#ffdd57; }
+
+        .main { flex:1; padding:2rem 1rem; display:flex; justify-content:center; }
+
+        /* Card */
+        .card {
+            background:#fff;
+            border-radius:1rem;
+            padding:2rem;
+            max-width:700px;
+            width:100%;
+            box-shadow:0 4px 15px rgba(0,0,0,0.07);
+        }
+        .card-header {
+            font-weight:600;
+            font-size:1.25rem;
+            margin-bottom:1rem;
+            color:#6610f2;
+        }
+
+        input, select, textarea, button {
+            width:100%; padding:0.75rem 1rem; margin-bottom:1rem; font-size:1rem;
+            border-radius:0.5rem; border:1px solid #ddd; box-sizing:border-box;
+        }
+        button {
+            background:#6610f2; color:white; border:none; font-weight:600; cursor:pointer;
+            transition:0.3s;
+        }
+        button:hover { background:#6f42c1; }
+        .btn-delete {
+            background:#dc3545; margin-top:0.5rem;
+        }
+        .btn-delete:hover { background:#c82333; }
+
+        /* Footer */
+        footer {
+            text-align:center; padding:1rem 0; background-color:#fff;
+            font-size:0.85rem; color:#495057;
+            border-top:1px solid #e0e0e0; margin-top:2rem;
+        }
+        @media(max-width:768px){ .main { padding:2rem 1rem; } }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <!-- Navbar -->
+    <div class="navbar-custom">
+        <h2>Edit Question | {{ question.course.title }}</h2>
+        <a href="{% url 'view_questions' question.course.id %}">🏠 Back to Questions</a>
+    </div>
+
+    <div class="main">
+        <div class="card">
+            <div class="card-header">Edit Question</div>
+
+            <!-- Edit Form -->
+            <form method="POST">
+                {% csrf_token %}
+                <label>Question</label>
+                <textarea name="text" rows="3" required>{{ question.text }}</textarea>
+
+                <label>Option A</label>
+                <input type="text" name="option_a" value="{{ question.option_a }}" required>
+
+                <label>Option B</label>
+                <input type="text" name="option_b" value="{{ question.option_b }}" required>
+
+                <label>Option C</label>
+                <input type="text" name="option_c" value="{{ question.option_c }}" required>
+
+                <label>Option D</label>
+                <input type="text" name="option_d" value="{{ question.option_d }}" required>
+                
+                 <label>Question Score</label>
+                <input type="text" name="mrk" value="{{ question.mrk }}" required>
+
+
+
+                <label>Correct Option</label>
+                <select name="correct_option" required>
+                    <option value="A" {% if question.correct_option == 'A' %}selected{% endif %}>A</option>
+                    <option value="B" {% if question.correct_option == 'B' %}selected{% endif %}>B</option>
+                    <option value="C" {% if question.correct_option == 'C' %}selected{% endif %}>C</option>
+                    <option value="D" {% if question.correct_option == 'D' %}selected{% endif %}>D</option>
+                </select>
+
+                <button type="submit">Save Changes</button>
+            </form>
+
+            <!-- Delete Form -->
+            <form method="POST" action="{% url 'delete_question' question.id %}" onsubmit="return confirm('Are you sure you want to delete this question?');">
+                {% csrf_token %}
+                <button type="submit" class="btn-delete">Delete Question</button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>&copy; {{ now|date:"Y" }} Digit Ds Solutions. All rights reserved.</footer>
+</div>
+</body>
+</html>

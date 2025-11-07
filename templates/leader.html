@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Exam Leaderboard - {{ scholarship.title }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f7fb;
+    margin: 0;
+    padding: 20px;
+}
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.logo {
+    display: block;
+    margin: 0 auto 0.5rem auto;
+    max-width: 150px;
+}
+.council-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6610f2;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+h1 {
+    color: #6610f2;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #6610f2;
+    color: white;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    margin-right: 5px;
+    transition: background 0.3s;
+}
+.btn:hover {
+    background: #6f42c1;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+th {
+    background-color: #6610f2;
+    color: #fff;
+}
+tr:nth-child(even) { background-color: #f9f9f9; }
+.status {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    color: #fff;
+    text-align: center;
+}
+.status.PASS { background-color: #28a745; }
+.status.FAILED { background-color: #dc3545; }
+</style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Logo -->
+    <div style="text-align: center;">
+        <img src="{% static 'img/clientlogo.png' %}" alt="Logo" style="width:120px; height:auto;">
+    </div>
+    <div class="council-name">Ukwuani Local Government Council CBT</div>
+
+    <h1>Leaderboard - {{ scholarship.title }}</h1>
+
+    <!-- Buttons -->
+    <div style="text-align: right; margin-bottom: 1rem;">
+        <button class="btn" onclick="window.print()">Print</button>
+        <a href="{% url 'export_leaderboard_excel' scholarship.id %}" class="btn">Export to Excel</a>
+    </div>
+
+    <table id="leaderboardTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Student</th>
+                <th>Total Score</th>
+                <th>Percentage</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in leaderboard %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ entry.student.get_full_name }}</td>
+                <td>{{ entry.total_score }} / {{ entry.total_possible }}</td>
+                <td>{{ entry.percentage }}%</td>
+                <td><span class="status {{ entry.status }}">{{ entry.status }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

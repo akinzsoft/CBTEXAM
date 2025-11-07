@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>All Users |   Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        html, body { margin:0; padding:0; height:100%; font-family:'Inter', sans-serif; background: #f5f7fb; }
+        .wrapper { min-height:100vh; display:flex; flex-direction:column; }
+
+        /* Navbar */
+        .navbar-custom {
+            background: linear-gradient(135deg, #6610f2, #6f42c1);
+            padding:1rem 2rem; color:white;
+            display:flex; justify-content:space-between; align-items:center;
+            border-radius:0 0 1rem 1rem; box-shadow:0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom:2rem;
+        }
+        .navbar-custom h2 { margin:0; font-weight:600; }
+        .navbar-custom a { color:white; font-weight:600; transition:0.3s; }
+        .navbar-custom a:hover { text-decoration: underline; color:#ffdd57; }
+
+        .main { flex:1; padding:2rem 1rem; display:flex; justify-content:center; }
+
+        /* Card */
+        .card {
+            background:#fff;
+            border-radius:1rem;
+            padding:2rem;
+            max-width:1000px;
+            width:100%;
+            box-shadow:0 4px 15px rgba(0,0,0,0.07);
+        }
+        .card-header {
+            font-weight:600;
+            font-size:1.25rem;
+            margin-bottom:1rem;
+            color:#6610f2;
+        }
+
+        /* Table */
+        table { width:100%; border-collapse: collapse; }
+        th, td { padding: 0.75rem 1rem; text-align:left; border-bottom:1px solid #eee; }
+        th { background:#f7f7f7; color:#495057; font-weight:600; }
+        tr:hover { background: #f0f0ff; }
+        .role { padding:0.25rem 0.5rem; border-radius:0.5rem; font-weight:600; color:#fff; display:inline-block; }
+        .role.Admin { background:#6610f2; }
+        .role.User { background:#6f42c1; }
+        .role.Moderator { background:#20c997; }
+        select.role-select {
+            border-radius:0.5rem; padding:0.25rem 0.5rem;
+            font-weight:600; border:none; background:#f0f0f0;
+            color:#495057; cursor:pointer; transition:0.2s;
+        }
+        select.role-select:hover { background:#e0e0ff; }
+
+        /* Buttons */
+        .btn-action {
+            padding:5px 10px; border:none; border-radius:6px;
+            font-size:0.85rem; font-weight:600; cursor:pointer; margin-right:5px;
+        }
+        .btn-disable { background:#ffc107; }
+        .btn-enable { background:#28a745; color:#fff; }
+        .btn-remove { background:#dc3545; color:#fff; }
+
+        /* Footer */
+        footer {
+            text-align:center; padding:1rem 0; background-color:#fff;
+            font-size:0.85rem; color:#495057;
+            border-top:1px solid #e0e0e0; margin-top:2rem;
+        }
+
+        @media(max-width:768px){ .main { padding:2rem 1rem; } }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <!-- Navbar -->
+    <div class="navbar-custom">
+        <h2>All Users</h2>
+        <a href="{% url 'home' %}">🏠 Back to Home</a>
+    </div>
+
+    <div class="main">
+        <div class="card">
+            <div class="card-header">Users List</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Full Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Date Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ user.first_name }} {{ user.last_name }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user != request.user %}
+                                <form action="{% url 'update_role' user.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <select name="role" class="role-select" onchange="this.form.submit()">
+                                        <option value="User" {% if user.profile.role|default:"User" == 'User' %}selected{% endif %}>User</option>
+                                        <option value="Admin" {% if user.profile.role|default:"User" == 'Admin' %}selected{% endif %}>Admin</option>
+                                        <option value="Moderator" {% if user.profile.role|default:"User" == 'Moderator' %}selected{% endif %}>Moderator</option>
+                                    </select>
+                                </form>
+                            {% else %}
+                                <span class="role {{ request.user.profile.role|default:"User" }}">
+                                    {{ request.user.profile.role|default:"User" }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                        <td>
+                            {% if user != request.user %}
+                                <!-- Toggle Enable/Disable -->
+                                <form action="{% url 'toggle_account_status' user.id %}" method="POST" style="display:inline;">
+                                    {% csrf_token %}
+                                    {% if user.is_active %}
+                                        <button type="submit" class="btn-action btn-disable">Disable</button>
+                                    {% else %}
+                                        <button type="submit" class="btn-action btn-enable">Enable</button>
+                                    {% endif %}
+                                </form>
+
+                                <!-- Remove (Admins Only) -->
+                                {% if request.user.profile.role == "Admin" %}
+                                <form action="{% url 'remove_user' user.id %}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to remove this user permanently? This cannot be undone.');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-action btn-remove">Remove</button>
+                                </form>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if request.user.profile.role == "Admin" %}
+<form action="{% url 'reset_password' user.id %}" method="POST" style="display:inline;" 
+      onsubmit="return confirm('Reset password for {{ user.first_name }} {{ user.last_name }} to default Password@1@  ');">
+    {% csrf_token %}
+    <button type="submit" class="btn-action btn-disable">Reset Password</button>
+</form>
+{% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" style="text-align:center;">No users found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>&copy; {{ now|date:"Y" }} Digit Ds Solutions. All rights reserved.</footer>
+</div>
+</body>
+</html>

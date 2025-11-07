@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Add Scholarship Program |  Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        html, body { margin:0; padding:0; height:100%; font-family:'Inter', sans-serif; background: #f5f7fb; }
+        .wrapper { min-height:100vh; display:flex; flex-direction:column; }
+
+        /* Navbar */
+        .navbar-custom {
+            background: linear-gradient(135deg, #6610f2, #6f42c1);
+            padding:1rem 2rem; color:white;
+            display:flex; justify-content:space-between; align-items:center;
+            border-radius:0 0 1rem 1rem; box-shadow:0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom:2rem;
+        }
+        .navbar-custom h2 { margin:0; font-weight:600; }
+        .navbar-custom a { color:white; font-weight:600; text-decoration:none; }
+        .navbar-custom a:hover { text-decoration: underline; color:#ffdd57; }
+
+        .main { flex:1; padding:2rem 1rem; display:flex; justify-content:center; }
+
+        /* Card */
+        .card {
+            background:#fff;
+            border-radius:1rem;
+            padding:2rem;
+            max-width:700px;
+            width:100%;
+            box-shadow:0 4px 15px rgba(0,0,0,0.07);
+        }
+        .card-header {
+            font-weight:600;
+            font-size:1.25rem;
+            margin-bottom:1rem;
+            color:#6610f2;
+        }
+
+        input, select, textarea, button {
+            width:100%; padding:0.75rem 1rem; margin-bottom:1rem; font-size:1rem;
+            border-radius:0.5rem; border:1px solid #ddd; box-sizing:border-box;
+        }
+        button {
+            background:#6610f2; color:white; border:none; font-weight:600; cursor:pointer;
+            transition:0.3s;
+        }
+        button:hover { background:#6f42c1; }
+
+        footer {
+            text-align:center; padding:1rem 0; background-color:#fff;
+            font-size:0.85rem; color:#495057;
+            border-top:1px solid #e0e0e0; margin-top:2rem;
+        }
+
+        @media(max-width:768px){ .main { padding:2rem 1rem; } }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <!-- Navbar -->
+    <div class="navbar-custom">
+        <h2>Add Scholarship Program</h2>
+        <a href="{% url 'scholarship_list' %}">🏠 Back to Scholarships</a>
+    </div>
+
+    <div class="main">
+        <div class="card">
+            <div class="card-header">Scholarship Details</div>
+
+            <!-- Add Scholarship Form -->
+            <form method="POST">
+                {% csrf_token %}
+
+                <label>Scholarship Title</label>
+                <input type="text" name="title" placeholder="Enter scholarship title" required>
+
+                <label>Passing Score (%)</label>
+                <input type="number" name="passing_score" min="0" max="100" placeholder="e.g., 70" required>
+
+                <label>Exam Date</label>
+                <input type="date" name="exam_date" required>
+
+                    <label for="exam_start">Exam Start Time <span style="font-weight: normal; font-size: 0.9em;">(24hrs)</span></label>
+<input type="time" id="exam_start" name="exam_start" required>
+
+<label for="exam_end">Exam End Time <span style="font-weight: normal; font-size: 0.9em;">(24hrs)</span></label>
+<input type="time" id="exam_end" name="exam_end" required>
+
+<label for="exam_duration">Exam Duration (minutes)</label>
+<input type="text" id="exam_duration" disabled>
+<input type="hidden" id="exam_duration_hidden" name="exam_duration">
+
+<script>
+  function calculateDuration() {
+  const start = document.getElementById("exam_start").value;
+  const end = document.getElementById("exam_end").value;
+
+  if (!start || !end) {
+    document.getElementById("exam_duration").value = "";
+    document.getElementById("exam_duration_hidden").value = "";
+    return;
+  }
+
+  const [startH, startM] = start.split(":").map(Number);
+  const [endH, endM] = end.split(":").map(Number);
+
+  let startTotal = startH * 60 + startM;
+  let endTotal = endH * 60 + endM;
+
+  if (endTotal < startTotal) endTotal += 24 * 60;
+
+  const duration = endTotal - startTotal;
+
+  document.getElementById("exam_duration").value = duration;
+  document.getElementById("exam_duration_hidden").value = duration;
+}
+
+document.getElementById("exam_start").addEventListener("change", calculateDuration);
+document.getElementById("exam_end").addEventListener("change", calculateDuration);
+</script>
+
+                <label>Total Exam Question</label>
+                <input type="number" name="tquestion" required>
+
+                <label>CBT Exam</label>
+                <select name="cbt_exam" required>
+                    <option value="">-- Select CBT Exam --</option>
+                    {% for exam in cbt_exams %}
+                        <option value="{{ exam.id }}">{{ exam.title }}</option>
+                    {% endfor %}
+                </select>
+
+                
+
+                <label>Requirements for Scholarship</label>
+                <textarea name="requirements" rows="4" placeholder="Enter requirements for applicants" required></textarea>
+
+                <button type="submit">Create Scholarship Program</button>
+            </form>
+   
+
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>&copy; {{ now|date:"Y" }} Digit Ds Solutions. All rights reserved.</footer>
+</div>
+</body>
+</html>

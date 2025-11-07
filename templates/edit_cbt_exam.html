@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% if exam %}Edit{% else %}Add{% endif %} CBT Exam | </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2-bootstrap4.min.css" rel="stylesheet" />
+
+    <style>
+        body { font-family:'Inter', sans-serif; background:#f5f7fb; margin:0; padding:0; }
+        .wrapper { min-height:100vh; display:flex; flex-direction:column; }
+
+        .navbar-custom {
+            background: linear-gradient(135deg, #6610f2, #6f42c1);
+            padding:1rem 2rem; color:white;
+            display:flex; justify-content:space-between; align-items:center;
+            border-radius:0 0 1rem 1rem; box-shadow:0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom:2rem;
+        }
+        .navbar-custom h2 { margin:0; font-weight:600; }
+        .navbar-custom a { color:white; font-weight:600; text-decoration:none; margin-left:1rem; }
+        .navbar-custom a:hover { text-decoration: underline; color:#ffdd57; }
+
+        .main { flex:1; padding:2rem 1rem; display:flex; justify-content:center; }
+        .card { background:#fff; border-radius:1rem; padding:2rem; max-width:600px; width:100%; box-shadow:0 4px 15px rgba(0,0,0,0.07); }
+        .card-header { font-weight:600; font-size:1.25rem; margin-bottom:1rem; color:#6610f2; }
+
+        label { font-weight:600; margin-bottom:0.3rem; display:block; }
+        input[type="text"], select, button {
+            width:100%;
+            padding:0.75rem 1rem;
+            margin-bottom:1rem;
+            font-size:1rem;
+            border-radius:0.5rem;
+            border:1px solid #ddd;
+            box-sizing:border-box;
+        }
+
+        select[multiple] {
+            min-height: 50px;
+        }
+
+        button {
+            background:#6610f2; color:white; border:none; font-weight:600; cursor:pointer;
+            transition:0.3s;
+        }
+        button:hover { background:#6f42c1; }
+
+        .error { color:red; font-weight:600; margin-bottom:1rem; }
+
+        footer { text-align:center; padding:1rem 0; background-color:#fff; font-size:0.85rem; color:#495057; border-top:1px solid #e0e0e0; margin-top:2rem; }
+
+        /* Select2 multi-select styling */
+        .select2-container--bootstrap4 .select2-selection--multiple {
+            border-radius: 0.5rem;
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            min-height: 45px;
+        }
+
+        @media(max-width:768px){ .main { padding:2rem 1rem; } }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="navbar-custom">
+        <h2>{% if exam %}Edit{% else %}Add{% endif %} CBT Exam</h2>
+        <div>
+            <a href="{% url 'view_cbt_exam' %}">👁️ View CBT Exams</a>
+            <a href="{% url 'scholarship_list' %}">🏠 Back to Scholarships</a>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="card">
+            <div class="card-header">{% if exam %}Edit{% else %}Add{% endif %} CBT Exam Details</div>
+
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <label>CBT Exam Title</label>
+                <input type="text" name="title" placeholder="Enter CBT Exam title" value="{{ exam.title|default_if_none:'' }}" required>
+
+                <label for="course">Select Course(s)</label>
+                <select name="courses" id="course" multiple="multiple">
+                    <option value="all" {% if exam.courses.count == courses.count %}selected{% endif %}>All Courses</option>
+                    {% for course in courses %}
+                        <option value="{{ course.id }}"
+                            {% if course.id in selected_courses %}selected{% endif %}>
+                            {{ course.title }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">{% if exam %}Update{% else %}Create{% endif %} CBT Exam</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>&copy; {{ now|date:"Y" }} Digit Ds Solutions. All rights reserved.</footer>
+</div>
+
+<!-- jQuery & Select2 JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#course').select2({
+        placeholder: "Select course(s)",
+        allowClear: true,
+        theme: "bootstrap4"
+    });
+});
+</script>
+</body>
+</html>

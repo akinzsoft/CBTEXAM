@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Available Exams</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Course(s)</th>
+                <th>Exam Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for scholarship in scholarships %}
+            <tr>
+                <td>{{ scholarship.title }}</td>
+                <td>
+                    {% if scholarship.course %}
+                        {{ scholarship.course.title }}
+                    {% else %}
+                        Multiple Courses
+                    {% endif %}
+                </td>
+                <td>{{ scholarship.exam_date }}</td>
+                <td>
+                    {% if scholarship.id in taken_ids %}
+                        <span class="badge bg-danger">Already Taken</span>
+                    {% else %}
+                        <a class="btn btn-sm btn-primary" href="{% url 'take_exam' scholarship.id %}">Take Exam</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No exams available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

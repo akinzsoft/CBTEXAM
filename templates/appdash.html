@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scholarship List | CBT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fb;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+        h1 {
+            color: #6610f2;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #6610f2;
+            color: white;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background 0.3s;
+            margin-right: 5px;
+        }
+        .btn:hover {
+            background: #6f42c1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+        th {
+            background: #6610f2;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+        tr:hover {
+            background: #e0d6f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Scholarship List</h1>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Scholarship Type No</th>
+                    <th>Passing Score</th>
+                    <th>CBT Exam</th>
+                    <th>Courses</th>
+                    <th>Requirements</th>
+                    <th>Action</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scholarship in scholarships %}
+                <tr>
+                    <td>{{ scholarship.title }}</td>
+                    <td>{{ scholarship.id }}</td>
+                    <td>{{ scholarship.passing_score }}</td>
+                    <td>{{ scholarship.cbt_exam.title }}</td>
+                    <td>
+                        {% for course in scholarship.cbt_exam.courses.all %}
+                            {{ course.title }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{ scholarship.requirements }}</td>
+                    <td>
+                        {% if request.user.is_authenticated %}
+                            <!-- Register button -->
+                            <a href="{% url 'register_student' scholarship.id %}" class="btn">Register Now</a>
+
+                            <!-- View applicants button -->
+                             
+                        {% else %}
+
+                        
+                            <span style="color: gray;">Login required</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if request.user.is_authenticated %}
+                            <!-- Register button -->
+                            <a href="{% url 'view_applicants' scholarship.id %}" class="btn">View Applicants</a>
+
+                            <!-- View applicants button -->
+                             
+                        {% else %}
+
+                        
+                            <span style="color: gray;">Login required</span>
+                        {% endif %}
+                    </td>
+                    
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center;">No scholarships available</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

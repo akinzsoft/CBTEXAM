@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ scholarship.title }} | CBT Exam</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f6f9; }
+        .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }
+        .question { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .question p { font-weight: bold; }
+        .options div { margin: 5px 0; }
+        #timer { font-size: 18px; font-weight: bold; color: #d9534f; margin-bottom: 20px; }
+        button { background-color: #007bff; color: #fff; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ scholarship.title }} | CBT Exam</h1>
+        <p>Duration: {{ scholarship.examduration }} minutes</p>
+        <div id="timer"></div>
+        <form method="POST" id="cbtForm">
+            {% csrf_token %}
+            {% for question in questions %}
+            <div class="question">
+                <p>{{ forloop.counter }}. {{ question.text }}</p>
+                <div class="options">
+                    <div><label><input type="radio" name="question_{{ question.id }}" value="A"> {{ question.option_a }}</label></div>
+                    <div><label><input type="radio" name="question_{{ question.id }}" value="B"> {{ question.option_b }}</label></div>
+                    <div><label><input type="radio" name="question_{{ question.id }}" value="C"> {{ question.option_c }}</label></div>
+                    <div><label><input type="radio" name="question_{{ question.id }}" value="D"> {{ question.option_d }}</label></div>
+                </div>
+            </div>
+            {% endfor %}
+            <button type="submit">Submit Exam</button>
+        </form>
+    </div>
+
+    <script>
+        // Timer countdown
+        let duration = {{ scholarship.examduration }} * 60; // duration in seconds
+        const timerElement = document.getElementById('timer');
+
+        function startTimer() {
+            let interval = setInterval(() => {
+                let minutes = Math.floor(duration / 60);
+                let seconds = duration % 60;
+                timerElement.textContent = `Time Remaining: ${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+                duration--;
+                if (duration < 0) {
+                    clearInterval(interval);
+                    alert("Time is up! Your exam will be submitted automatically.");
+                    document.getElementById('cbtForm').submit();
+                }
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', startTimer);
+    </script>
+    
+</body>
+</html>

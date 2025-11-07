@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Edit Course | </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        html, body { margin:0; padding:0; font-family:'Inter', sans-serif; background:#f5f7fb; }
+        .wrapper { min-height:100vh; display:flex; flex-direction:column; }
+        .navbar-custom {
+            background: linear-gradient(135deg, #6610f2, #6f42c1);
+            padding:1rem 2rem; color:white;
+            display:flex; justify-content:space-between; align-items:center;
+            border-radius:0 0 1rem 1rem; box-shadow:0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom:2rem;
+        }
+        .navbar-custom h2 { margin:0; font-weight:600; }
+        .navbar-custom a { color:white; text-decoration:none; font-weight:600; }
+        .navbar-custom a:hover { text-decoration: underline; color:#ffdd57; }
+        .main { flex:1; display:flex; justify-content:center; padding:2rem 1rem; }
+        .card { background:#fff; border-radius:1rem; padding:2rem; max-width:600px; width:100%; box-shadow:0 4px 15px rgba(0,0,0,0.07); }
+        .card-header { font-weight:600; font-size:1.25rem; margin-bottom:1rem; color:#6610f2; }
+        form input[type="text"], form button { width:100%; padding:0.75rem 1rem; margin-bottom:1rem; border-radius:0.5rem; border:1px solid #ddd; font-size:1rem; box-sizing:border-box; }
+        form button { background:#6610f2; color:white; border:none; font-weight:600; cursor:pointer; transition:0.3s; }
+        form button:hover { background:#6f42c1; }
+        footer { text-align:center; padding:1rem 0; background:#fff; font-size:0.85rem; color:#495057; border-top:1px solid #e0e0e0; margin-top:2rem; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="navbar-custom">
+        <h2>Edit Course</h2>
+        <a href="{% url 'view_courses' %}">📚 Back to Courses</a>
+    </div>
+
+    <div class="main">
+        <div class="card">
+            <div class="card-header">Update Course Title</div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="text" name="title" value="{{ course.title }}" required>
+                <button type="submit">Update Course</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>&copy; {{ now|date:"Y" }} Digit Ds Solutions. All rights reserved.</footer>
+</div>
+</body>
+</html>

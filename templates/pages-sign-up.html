@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Sign Up | </title>
+    <link href="{% static 'css/app.css' %}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body, html { height: 100%; margin: 0; font-family: 'Inter', sans-serif; background-color: #f4f6fa; }
+        .container-signup { display: flex; flex-direction: column; min-height: 100vh; justify-content: center; align-items: center; }
+        .card { border-radius: 1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.12); padding: 2rem; max-width: 450px; width: 100%; background: #fff; transition: transform 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        h1.h2 { color: #6610f2; font-weight: 700; margin-bottom: 0.5rem; }
+        p.lead { color: #495057; margin-bottom: 2rem; }
+        .form-control { border-radius: 0.5rem; padding: 0.75rem 1rem; }
+        .btn-primary { background: linear-gradient(135deg, #6610f2, #6f42c1); border: none; font-weight: 600; transition: 0.3s; }
+        .btn-primary:hover { background: linear-gradient(135deg, #6f42c1, #6610f2); transform: translateY(-2px); }
+        .home-btn { margin-bottom: 1rem; text-decoration: none; color: #fff; background: linear-gradient(135deg, #28a745, #20c997); padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; transition: 0.3s; }
+        .home-btn:hover { background: linear-gradient(135deg, #20c997, #28a745); text-decoration: none; }
+        footer { text-align: center; margin-top: 2rem; color: #495057; font-weight: 500; }
+        .alert { padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1rem; }
+        .alert-success { background-color: #d4edda; color: #155724; }
+        .alert-danger { background-color: #f8d7da; color: #721c24; }
+        @media(max-width: 576px){ .card { padding: 1.5rem; } }
+    </style>
+</head>
+
+<body>
+    <div class="container-signup">
+        <!-- Home button -->
+        <a href="{% url 'home' %}" class="home-btn">← Back to Home</a>
+
+        <div class="card">
+            <div class="text-center mb-4">
+                <h1 class="h2">Get Started</h1>
+                <p class="lead">Create the best experience for your customers.</p>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                <div class="mb-3">
+                    {% for message in messages %}
+                        <div class="alert 
+                                    {% if message.tags == 'success' %}alert-success{% endif %}
+                                    {% if message.tags == 'error' %}alert-danger{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form action="{% url 'register' %}" method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input class="form-control form-control-lg" type="text" name="username" placeholder="Enter username" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control form-control-lg" type="email" name="email" placeholder="Enter your email" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">First Name</label>
+                    <input class="form-control form-control-lg" type="text" name="first_name" placeholder="First name" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Last Name</label>
+                    <input class="form-control form-control-lg" type="text" name="last_name" placeholder="Last name" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input class="form-control form-control-lg" type="password" name="password" placeholder="Enter password" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input class="form-control form-control-lg" type="password" name="password2" placeholder="Confirm password" required />
+                </div>
+                <div class="d-grid gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            &copy; {{ now|date:"Y" }} Digit Ds Solutions. All rights reserved.
+        </footer>
+    </div>
+
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
